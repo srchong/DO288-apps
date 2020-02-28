@@ -36,7 +36,7 @@ pipeline {
                 steps{
                         timeout(time: 60, unit: 'MINUTES'){
 				input message: "Move to stage 3?"
-			]
+			}
                 }
         }
 
