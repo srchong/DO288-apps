@@ -65,12 +65,13 @@ class AudioEngine {
     return this.#buffers.has(id);
   }
 
-  // Reproduce un clip precargado. Detiene el clip anterior para evitar
-  // solapamientos. Si el clip no existe, no hace nada.
-  play(id: string): void {
+  // Reproduce un clip precargado y devuelve una promesa que se resuelve
+  // cuando el clip termina (o se interrumpe). Detiene el clip anterior para
+  // evitar solapamientos. Si el clip no existe, resuelve de inmediato.
+  play(id: string): Promise<void> {
     const ctx = this.#context;
     const buffer = this.#buffers.get(id);
-    if (!ctx || !buffer) return;
+    if (!ctx || !buffer) return Promise.resolve();
     // Red de seguridad: play() siempre se invoca desde un gesto del usuario,
     // así que es seguro reanudar el contexto si aún sigue suspendido.
     if (ctx.state === 'suspended') void ctx.resume();
@@ -79,11 +80,15 @@ class AudioEngine {
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     source.connect(ctx.destination);
-    source.onended = () => {
-      if (this.#currentSource === source) this.#currentSource = null;
-    };
+    const ended = new Promise<void>((resolve) => {
+      source.onended = () => {
+        if (this.#currentSource === source) this.#currentSource = null;
+        resolve();
+      };
+    });
     source.start();
     this.#currentSource = source;
+    return ended;
   }
 
   // Detiene el clip en curso, si lo hay.

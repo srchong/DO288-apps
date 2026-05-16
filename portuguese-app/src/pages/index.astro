@@ -1,12 +1,11 @@
 ---
-// Placeholder del Módulo 0: confirma que el scaffold de Astro arranca.
-// El shell real de la app y la conmutación de vistas llegan en el Módulo 7.
 import Base from '../layouts/Base.astro';
+import ColorChart from '../components/ColorChart.astro';
 ---
 
 <Base title="Aprender Portugués — MVP">
-  <main>
-    <h1>Aprender Portugués</h1>
-    <p>Scaffold inicial. Las vistas se implementan en los módulos siguientes.</p>
+  <main class="app">
+    <h1 class="visually-hidden">Aprender Portugués</h1>
+    <ColorChart />
   </main>
 </Base>

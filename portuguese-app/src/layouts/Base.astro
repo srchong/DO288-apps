@@ -1,5 +1,9 @@
 ---
 // Layout base: shell HTML compartido por la app.
+// El idioma del documento es español (la interfaz que lee el usuario);
+// los audios en portugués son contenido aparte.
+import '../styles/global.css';
+
 interface Props {
   title: string;
 }
@@ -8,7 +12,7 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="pt-BR">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

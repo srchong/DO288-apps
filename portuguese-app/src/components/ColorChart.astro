@@ -1,0 +1,137 @@
+---
+// Vista 1 — "Color Chart" (Silent Way).
+// Cuadrícula de fichas de color sin texto: al pulsar suena el fonema nativo
+// y la interfaz indica visualmente "Es tu turno de repetir".
+import { PHONEMES } from '../scripts/data/phonemes';
+---
+
+<section class="color-chart" aria-labelledby="color-chart-heading">
+  <h2 id="color-chart-heading" class="visually-hidden">Cuadrícula de sonidos</h2>
+
+  <div class="color-chart__grid" role="group" aria-label="Fichas de sonido">
+    {
+      PHONEMES.map((phoneme) => (
+        <button
+          type="button"
+          class="color-chart__tile"
+          style={`--tile-color: ${phoneme.color}`}
+          data-phoneme-id={phoneme.id}
+          aria-label={phoneme.ariaLabel}
+        />
+      ))
+    }
+  </div>
+
+  <p class="color-chart__cue" data-cue aria-live="polite"></p>
+</section>
+
+<style>
+  .color-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .color-chart__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9rem;
+    width: min(92vw, 460px);
+  }
+
+  .color-chart__tile {
+    aspect-ratio: 1;
+    padding: 0;
+    border: none;
+    border-radius: 16px;
+    background-color: var(--tile-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition:
+      transform 120ms ease,
+      box-shadow 120ms ease,
+      filter 120ms ease;
+  }
+
+  .color-chart__tile:hover {
+    filter: brightness(1.08);
+  }
+
+  .color-chart__tile:active {
+    transform: scale(0.94);
+  }
+
+  .color-chart__tile:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+  }
+
+  /* Ficha cuyo audio se está reproduciendo. */
+  .color-chart__tile.is-playing {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 0 4px rgba(255, 255, 255, 0.9),
+      0 4px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Señal "Es tu turno de repetir": reserva su espacio para no desplazar
+     la cuadrícula al aparecer y desaparecer. */
+  .color-chart__cue {
+    min-height: 1.6em;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #8be28b;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .color-chart__tile {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { audioEngine } from '../scripts/audio/audioEngine';
+  import { PHONEMES, phonemeAudioSrc } from '../scripts/data/phonemes';
+
+  // Precarga todos los audios de fonemas en cuanto carga la vista, para que
+  // el primer toque no tenga lag.
+  const clips = PHONEMES.map((phoneme) => ({
+    id: phoneme.id,
+    src: phonemeAudioSrc(phoneme),
+  }));
+  void audioEngine.preload(clips);
+
+  const cue = document.querySelector<HTMLParagraphElement>('[data-cue]');
+  const tiles = document.querySelectorAll<HTMLButtonElement>('.color-chart__tile');
+
+  // Token de la última ficha pulsada: si el usuario pulsa otra antes de que
+  // termine el audio, se ignora la señal "tu turno" de la pulsación previa.
+  let requestToken = 0;
+
+  for (const tile of tiles) {
+    tile.addEventListener('click', async () => {
+      const id = tile.dataset.phonemeId;
+      if (!id) return;
+
+      const token = ++requestToken;
+      if (cue) cue.textContent = '';
+      tile.classList.add('is-playing');
+
+      // unlock() reanuda el AudioContext en el primer gesto del usuario.
+      await audioEngine.unlock();
+      await audioEngine.play(id);
+
+      tile.classList.remove('is-playing');
+      // Solo mostrar la señal si esta sigue siendo la última ficha pulsada.
+      if (token === requestToken && cue) {
+        cue.textContent = 'Es tu turno de repetir';
+      }
+    });
+  }
+</script>
