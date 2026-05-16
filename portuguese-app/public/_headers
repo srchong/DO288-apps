@@ -1,0 +1,3 @@
+# Cache largo e inmutable para el banco de audios precargados.
+/audio/*
+  Cache-Control: public, max-age=31536000, immutable

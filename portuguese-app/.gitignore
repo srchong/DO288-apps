@@ -1,0 +1,13 @@
+# dependencias
+node_modules/
+
+# build de Astro
+dist/
+.astro/
+
+# entorno
+.env
+.env.production
+
+# sistema
+.DS_Store
