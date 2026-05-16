@@ -1,0 +1,307 @@
+---
+// Vista 2 — Práctica de Vocabulario (Quick Learning).
+// Muestra una palabra en portugués y un botón push-to-talk (walkie-talkie):
+// al mantener pulsado se graba; al soltar, el audio se envía al evaluador
+// fonético y se muestra feedback de éxito (verde) o reintento (rojo sutil).
+---
+
+<section class="vocab" data-state="idle" data-result="" aria-labelledby="vocab-heading">
+  <h2 id="vocab-heading" class="visually-hidden">Práctica de vocabulario</h2>
+
+  <p class="vocab__word" lang="pt" data-word></p>
+
+  <div class="vocab__ptt-wrap">
+    <span class="vocab__ptt-level" data-level aria-hidden="true"></span>
+    <button type="button" class="vocab__ptt" data-ptt aria-describedby="vocab-status">
+      <span class="vocab__ptt-label" data-label>Mantén presionado para hablar</span>
+    </button>
+  </div>
+
+  <p class="vocab__status" id="vocab-status" data-status role="status"></p>
+</section>
+
+<style>
+  .vocab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.75rem;
+  }
+
+  .vocab__word {
+    margin: 0;
+    font-size: clamp(2rem, 9vw, 3rem);
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .vocab__ptt-wrap {
+    position: relative;
+    width: clamp(150px, 44vw, 190px);
+    aspect-ratio: 1;
+  }
+
+  /* Halo que crece con el nivel del micrófono mientras se graba. */
+  .vocab__ptt-level {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.45);
+    transform: scale(calc(0.9 + var(--level, 0) * 0.7));
+    opacity: calc(var(--level, 0) * 0.9);
+    pointer-events: none;
+  }
+
+  .vocab__ptt {
+    position: absolute;
+    inset: 0;
+    border: none;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    padding: 1rem;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    transition:
+      transform 120ms ease,
+      background-color 150ms ease,
+      opacity 150ms ease;
+  }
+
+  .vocab__ptt:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 4px;
+  }
+
+  /* Grabando: botón "vivo". */
+  .vocab[data-state='recording'] .vocab__ptt {
+    background: #ef4444;
+    transform: scale(0.96);
+  }
+
+  /* Evaluando: botón ocupado, no admite nueva pulsación. */
+  .vocab[data-state='evaluating'] .vocab__ptt {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .vocab__status {
+    margin: 0;
+    min-height: 1.6em;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .vocab[data-result='success'] .vocab__word {
+    color: #6ee7a8;
+  }
+  .vocab[data-result='success'] .vocab__status {
+    color: #6ee7a8;
+  }
+  .vocab[data-result='fail'] .vocab__status {
+    color: #f8a3a3;
+  }
+  .vocab[data-result='error'] .vocab__status {
+    color: #f5c06b;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vocab__ptt,
+    .vocab__ptt-level {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { audioEngine } from '../scripts/audio/audioEngine';
+  import { micRecorder, MicError, type MicErrorKind } from '../scripts/audio/micRecorder';
+  import { levelMeter } from '../scripts/audio/levelMeter';
+  import { MockPhoneticEvaluator } from '../scripts/evaluation/MockPhoneticEvaluator';
+  import { VOCABULARY } from '../scripts/data/vocabulary';
+
+  // SFX de feedback: se precargan en el motor de audio compartido.
+  const SFX = [
+    { id: 'sfx-success', src: '/audio/sfx/success.wav' },
+    { id: 'sfx-retry', src: '/audio/sfx/retry.wav' },
+  ];
+  void audioEngine.preload(SFX);
+
+  // El evaluador se tipa como la interfaz: sustituirlo por una API real solo
+  // afecta a esta línea.
+  const evaluator = new MockPhoneticEvaluator();
+
+  const section = document.querySelector<HTMLElement>('.vocab');
+  const wordEl = document.querySelector<HTMLElement>('[data-word]');
+  const button = document.querySelector<HTMLButtonElement>('[data-ptt]');
+  const labelEl = document.querySelector<HTMLElement>('[data-label]');
+  const levelEl = document.querySelector<HTMLElement>('[data-level]');
+  const statusEl = document.querySelector<HTMLElement>('[data-status]');
+
+  const IDLE_LABEL = 'Mantén presionado para hablar';
+
+  // Mensaje de recuperación según la categoría de error de micrófono.
+  function micErrorMessage(kind: MicErrorKind): string {
+    switch (kind) {
+      case 'permission-denied':
+        return 'Necesitamos el micrófono. Permítelo en el navegador e inténtalo de nuevo.';
+      case 'no-device':
+        return 'No se detectó ningún micrófono. Conecta uno e inténtalo de nuevo.';
+      case 'insecure-context':
+        return 'El micrófono requiere una conexión segura (HTTPS).';
+      case 'unsupported':
+        return 'Tu navegador no permite grabar audio.';
+      default:
+        return 'No se pudo acceder al micrófono. Inténtalo de nuevo.';
+    }
+  }
+
+  if (section && wordEl && button && labelEl && levelEl && statusEl) {
+    type State = 'idle' | 'starting' | 'recording' | 'evaluating';
+    let state: State = 'idle';
+    let pressed = false;
+    let wordIndex = 0;
+    let currentWord = '';
+
+    function setState(next: State): void {
+      state = next;
+      section!.dataset.state = next;
+    }
+
+    function setResult(kind: 'success' | 'fail' | 'error' | '', message: string): void {
+      section!.dataset.result = kind;
+      statusEl!.textContent = message;
+    }
+
+    function loadWord(): void {
+      currentWord = VOCABULARY[wordIndex]?.text ?? '';
+      wordEl!.textContent = currentWord;
+    }
+
+    function setLevel(level: number): void {
+      levelEl!.style.setProperty('--level', level.toFixed(3));
+    }
+
+    // Inicio de la pulsación: solicita el micrófono y arranca la grabación.
+    async function beginRecording(): Promise<void> {
+      if (state !== 'idle') return;
+      pressed = true;
+      setResult('', '');
+      setState('starting');
+      labelEl!.textContent = 'Preparando micrófono…';
+      void audioEngine.unlock(); // reanuda el contexto para los SFX posteriores
+
+      try {
+        await micRecorder.start();
+      } catch (err) {
+        pressed = false;
+        setState('idle');
+        labelEl!.textContent = IDLE_LABEL;
+        const message =
+          err instanceof MicError
+            ? micErrorMessage(err.kind)
+            : micErrorMessage('unknown');
+        setResult('error', message);
+        return;
+      }
+
+      // El micrófono ya está grabando.
+      setState('recording');
+      labelEl!.textContent = 'Grabando… suelta para enviar';
+      const stream = micRecorder.stream;
+      if (stream) levelMeter.start(stream, setLevel);
+
+      // El usuario pudo soltar mientras se pedía el permiso.
+      if (!pressed) void finishRecording();
+    }
+
+    // Fin de la pulsación: detiene la grabación y evalúa lo capturado.
+    async function finishRecording(): Promise<void> {
+      if (state !== 'recording') return;
+      pressed = false;
+      levelMeter.stop();
+      setLevel(0);
+      setState('evaluating');
+      labelEl!.textContent = 'Evaluando…';
+
+      let audio: Blob;
+      try {
+        const recording = await micRecorder.stop();
+        audio = recording.blob;
+      } catch {
+        setState('idle');
+        labelEl!.textContent = IDLE_LABEL;
+        setResult('error', 'No se pudo completar la grabación. Inténtalo de nuevo.');
+        return;
+      }
+
+      const result = await evaluator.evaluate({ audio, targetWord: currentWord });
+      setState('idle');
+      labelEl!.textContent = IDLE_LABEL;
+
+      if (result.success) {
+        setResult('success', result.message ?? '¡Muy bien!');
+        void audioEngine.play('sfx-success');
+        // Avanzar a la siguiente palabra tras una breve pausa.
+        wordIndex = (wordIndex + 1) % VOCABULARY.length;
+        window.setTimeout(() => {
+          loadWord();
+          setResult('', '');
+        }, 900);
+      } else {
+        // Fracaso: rojo sutil, se mantiene la misma palabra para reintentar.
+        setResult('fail', result.message ?? 'Casi. Inténtalo otra vez.');
+        void audioEngine.play('sfx-retry');
+      }
+    }
+
+    // Pointer Events + pointer capture: la pulsación sigue al dedo aunque
+    // se salga del botón.
+    button.addEventListener('pointerdown', (event) => {
+      if (state !== 'idle') return;
+      event.preventDefault();
+      button.setPointerCapture(event.pointerId);
+      void beginRecording();
+    });
+
+    function endPress(event: PointerEvent): void {
+      if (button!.hasPointerCapture(event.pointerId)) {
+        button!.releasePointerCapture(event.pointerId);
+      }
+      if (state === 'recording') {
+        void finishRecording();
+      } else if (state === 'starting') {
+        // La grabación aún se está iniciando: beginRecording la cerrará.
+        pressed = false;
+      }
+    }
+    button.addEventListener('pointerup', endPress);
+    button.addEventListener('pointercancel', endPress);
+
+    // Evita el menú contextual al mantener pulsado (long-press).
+    button.addEventListener('contextmenu', (event) => event.preventDefault());
+
+    // Accesibilidad básica: push-to-talk también con teclado (Espacio/Enter).
+    button.addEventListener('keydown', (event) => {
+      if ((event.key === ' ' || event.key === 'Enter') && !event.repeat && state === 'idle') {
+        event.preventDefault();
+        void beginRecording();
+      }
+    });
+    button.addEventListener('keyup', (event) => {
+      if (event.key !== ' ' && event.key !== 'Enter') return;
+      if (state === 'recording') void finishRecording();
+      else if (state === 'starting') pressed = false;
+    });
+
+    loadWord();
+  }
+</script>

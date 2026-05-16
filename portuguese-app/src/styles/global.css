@@ -23,8 +23,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 3rem;
   min-height: 100vh;
-  padding: 2rem 1rem;
+  padding: 2.5rem 1rem;
 }
 
 /* Oculta contenido visualmente pero lo mantiene para lectores de pantalla. */

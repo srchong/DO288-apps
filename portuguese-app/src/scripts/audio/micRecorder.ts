@@ -77,6 +77,12 @@ class MicRecorder {
     return this.#recorder?.state === 'recording';
   }
 
+  // El MediaStream activo del micrófono, o null si aún no se ha solicitado.
+  // Lo usa el medidor de nivel (AnalyserNode) sobre el mismo stream.
+  get stream(): MediaStream | null {
+    return this.#stream;
+  }
+
   // Obtiene el MediaStream del micrófono. La primera vez muestra el diálogo
   // de permiso; después reutiliza el stream para que el push-to-talk capture
   // sin latencia. Lanza MicError con la categoría correspondiente si falla.
