@@ -7,7 +7,23 @@ import VocabularyPractice from '../components/VocabularyPractice.astro';
 <Base title="Aprender Portugués — MVP">
   <main class="app">
     <h1 class="visually-hidden">Aprender Portugués</h1>
-    <ColorChart />
-    <VocabularyPractice />
+
+    <nav class="app-nav" aria-label="Vistas de la aplicación">
+      <button type="button" data-nav="chart" aria-current="page">Sonidos</button>
+      <button type="button" data-nav="practice">Práctica</button>
+    </nav>
+
+    <div class="views">
+      <div class="view" data-view="chart">
+        <ColorChart />
+      </div>
+      <div class="view" data-view="practice" hidden>
+        <VocabularyPractice />
+      </div>
+    </div>
   </main>
+
+  <script>
+    import '../scripts/app';
+  </script>
 </Base>

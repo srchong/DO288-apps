@@ -302,6 +302,18 @@
       else if (state === 'starting') pressed = false;
     });
 
+    // Al salir de esta vista, aborta cualquier grabación en curso para no
+    // dejar la vista en un estado bloqueado (el micrófono lo libera app.ts).
+    document.addEventListener('app:viewchange', (event) => {
+      const view = (event as CustomEvent<{ view: string }>).detail.view;
+      if (view === 'practice' || state === 'idle') return;
+      pressed = false;
+      levelMeter.stop();
+      setLevel(0);
+      setState('idle');
+      labelEl!.textContent = IDLE_LABEL;
+    });
+
     loadWord();
   }
 </script>

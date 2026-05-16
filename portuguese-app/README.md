@@ -28,10 +28,18 @@ npm run build          # genera dist/ estático
 npm run preview        # sirve dist/ localmente
 ```
 
-## Despliegue
+## Despliegue (Cloudflare Pages)
 
-`npm run build` produce `dist/`, que se publica tal cual en Cloudflare Pages
-(build command `npm run build`, output directory `dist`).
+La app es 100% estática. Opciones para desplegarla:
+
+- **Integración Git:** conecta el repositorio en Cloudflare Pages y configura
+  - Root directory: `portuguese-app`
+  - Build command: `npm run build`
+  - Build output directory: `dist`
+- **Wrangler:** `npm run build` y luego `npx wrangler pages deploy dist`.
+
+`wrangler.toml` declara el directorio de salida, `public/_headers` aplica
+cache de larga duración a `/audio` y `.nvmrc` fija la versión de Node.
 
 ## Convenciones
 
