@@ -1,0 +1,150 @@
+{
+  "common": {
+    "appName": "Evently",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "loading": "Loading...",
+    "back": "Back",
+    "confirm": "Confirm",
+    "close": "Close",
+    "language": "Language",
+    "spanish": "Spanish",
+    "english": "English"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "My dashboard",
+    "profile": "Profile",
+    "login": "Log in",
+    "signup": "Sign up",
+    "logout": "Log out"
+  },
+  "landing": {
+    "title": "Photo albums for your events",
+    "subtitle": "Create albums with a nostalgic look, collect photos from your guests, and share 360° memories.",
+    "cta": "Start for free",
+    "ctaLogin": "I already have an account"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "signupTitle": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "displayName": "Name",
+    "loginButton": "Sign in",
+    "signupButton": "Sign up",
+    "googleButton": "Continue with Google",
+    "orDivider": "or",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "goSignup": "Create one",
+    "goLogin": "Log in",
+    "checkEmail": "Check your email to confirm your account.",
+    "logoutDone": "Signed out."
+  },
+  "profile": {
+    "title": "My profile",
+    "displayName": "Display name",
+    "email": "Email",
+    "emailReadonly": "Email cannot be changed.",
+    "saved": "Profile updated."
+  },
+  "dashboard": {
+    "title": "My albums",
+    "newAlbum": "New album",
+    "empty": "You don't have any albums yet. Create your first one.",
+    "photosCount": "{count, plural, =0 {No photos} one {# photo} other {# photos}}",
+    "pendingCount": "{count, plural, =0 {} other {# to moderate}}"
+  },
+  "album": {
+    "newTitle": "New album",
+    "editTitle": "Edit album",
+    "name": "Album title",
+    "namePlaceholder": "Ana and Luis's wedding",
+    "eventType": "Event type",
+    "eventDate": "Event date",
+    "background": "Album background",
+    "allowGuestUploads": "Let guests upload photos",
+    "allowGuestUploadsHint": "Guest photos stay pending until you approve them.",
+    "publicLink": "Public link",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied.",
+    "created": "Album created.",
+    "updated": "Album updated.",
+    "deleted": "Album deleted.",
+    "deleteConfirm": "Delete this album and all its photos?",
+    "tabPhotos": "Photos",
+    "tabModeration": "Moderation",
+    "tabSettings": "Settings"
+  },
+  "eventTypes": {
+    "wedding": "Wedding",
+    "xv": "Quinceañera",
+    "birthday": "Birthday",
+    "baptism": "Baptism",
+    "corporate": "Corporate event",
+    "sports": "Sports event",
+    "meeting": "Gathering",
+    "other": "Other"
+  },
+  "backgrounds": {
+    "free": "Free",
+    "premium": "Premium",
+    "categoryWedding": "Wedding",
+    "categoryParty": "Party",
+    "categoryKids": "Kids",
+    "categoryCorporate": "Corporate",
+    "categoryClassic": "Classic"
+  },
+  "photos": {
+    "upload": "Upload photos",
+    "uploadHint": "Drag your photos here or click to choose.",
+    "uploading": "Uploading {done} of {total}...",
+    "uploadDone": "Photos uploaded.",
+    "uploadError": "Some photos could not be uploaded.",
+    "empty": "This album has no photos yet.",
+    "is360": "360° photo",
+    "view360": "View in 360°",
+    "viewHighQuality": "View in high quality",
+    "deletePhoto": "Delete photo",
+    "deleteConfirm": "Delete this photo?"
+  },
+  "moderation": {
+    "title": "Photos to approve",
+    "empty": "No photos pending moderation.",
+    "uploadedBy": "Uploaded by a guest",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approved": "Photo approved.",
+    "rejected": "Photo rejected."
+  },
+  "publicAlbum": {
+    "guestUpload": "Upload my photos",
+    "guestUploadTitle": "Share your photos",
+    "guestUploadHint": "Your photos will be published once the organizer approves them.",
+    "guestUploadDone": "Thank you! Your photos are under review.",
+    "notFound": "Album not found.",
+    "commentsTitle": "Comments",
+    "noComments": "No comments yet. Be the first."
+  },
+  "comments": {
+    "namePlaceholder": "Your name",
+    "textPlaceholder": "Write a comment...",
+    "submit": "Post comment",
+    "submitted": "Comment posted.",
+    "captchaRequired": "Please complete the security check.",
+    "captchaFailed": "The security check failed. Please try again."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "unauthorized": "You need to log in.",
+    "invalidCredentials": "Incorrect email or password.",
+    "required": "This field is required.",
+    "fileTooLarge": "The file is too large.",
+    "invalidFileType": "Unsupported file type.",
+    "guestUploadsDisabled": "This album does not accept guest photos."
+  }
+}

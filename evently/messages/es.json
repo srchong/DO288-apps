@@ -1,0 +1,150 @@
+{
+  "common": {
+    "appName": "Evently",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "loading": "Cargando...",
+    "back": "Volver",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "language": "Idioma",
+    "spanish": "Español",
+    "english": "Inglés"
+  },
+  "nav": {
+    "home": "Inicio",
+    "dashboard": "Mi panel",
+    "profile": "Perfil",
+    "login": "Iniciar sesión",
+    "signup": "Crear cuenta",
+    "logout": "Cerrar sesión"
+  },
+  "landing": {
+    "title": "Álbumes de fotos para tus eventos",
+    "subtitle": "Crea álbumes con estética nostálgica, recibe fotos de tus invitados y comparte recuerdos 360°.",
+    "cta": "Empezar gratis",
+    "ctaLogin": "Ya tengo cuenta"
+  },
+  "auth": {
+    "loginTitle": "Iniciar sesión",
+    "signupTitle": "Crear cuenta",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "displayName": "Nombre",
+    "loginButton": "Entrar",
+    "signupButton": "Registrarme",
+    "googleButton": "Continuar con Google",
+    "orDivider": "o",
+    "noAccount": "¿No tienes cuenta?",
+    "haveAccount": "¿Ya tienes cuenta?",
+    "goSignup": "Crear una",
+    "goLogin": "Iniciar sesión",
+    "checkEmail": "Revisa tu correo para confirmar la cuenta.",
+    "logoutDone": "Sesión cerrada."
+  },
+  "profile": {
+    "title": "Mi perfil",
+    "displayName": "Nombre para mostrar",
+    "email": "Correo electrónico",
+    "emailReadonly": "El correo no se puede cambiar.",
+    "saved": "Perfil actualizado."
+  },
+  "dashboard": {
+    "title": "Mis álbumes",
+    "newAlbum": "Nuevo álbum",
+    "empty": "Aún no tienes álbumes. Crea el primero.",
+    "photosCount": "{count, plural, =0 {Sin fotos} one {# foto} other {# fotos}}",
+    "pendingCount": "{count, plural, =0 {} other {# por moderar}}"
+  },
+  "album": {
+    "newTitle": "Nuevo álbum",
+    "editTitle": "Editar álbum",
+    "name": "Título del álbum",
+    "namePlaceholder": "La boda de Ana y Luis",
+    "eventType": "Tipo de evento",
+    "eventDate": "Fecha del evento",
+    "background": "Fondo del álbum",
+    "allowGuestUploads": "Permitir que los invitados suban fotos",
+    "allowGuestUploadsHint": "Las fotos de invitados quedan pendientes hasta que las apruebes.",
+    "publicLink": "Enlace público",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "Enlace copiado.",
+    "created": "Álbum creado.",
+    "updated": "Álbum actualizado.",
+    "deleted": "Álbum eliminado.",
+    "deleteConfirm": "¿Eliminar este álbum y todas sus fotos?",
+    "tabPhotos": "Fotos",
+    "tabModeration": "Moderación",
+    "tabSettings": "Ajustes"
+  },
+  "eventTypes": {
+    "wedding": "Boda",
+    "xv": "XV años",
+    "birthday": "Cumpleaños",
+    "baptism": "Bautizo",
+    "corporate": "Evento corporativo",
+    "sports": "Evento deportivo",
+    "meeting": "Reunión",
+    "other": "Otro"
+  },
+  "backgrounds": {
+    "free": "Gratis",
+    "premium": "De pago",
+    "categoryWedding": "Boda",
+    "categoryParty": "Fiesta",
+    "categoryKids": "Infantil",
+    "categoryCorporate": "Corporativo",
+    "categoryClassic": "Clásico"
+  },
+  "photos": {
+    "upload": "Subir fotos",
+    "uploadHint": "Arrastra tus fotos aquí o haz clic para elegir.",
+    "uploading": "Subiendo {done} de {total}...",
+    "uploadDone": "Fotos subidas.",
+    "uploadError": "No se pudieron subir algunas fotos.",
+    "empty": "Este álbum aún no tiene fotos.",
+    "is360": "Foto 360°",
+    "view360": "Ver en 360°",
+    "viewHighQuality": "Ver en alta calidad",
+    "deletePhoto": "Eliminar foto",
+    "deleteConfirm": "¿Eliminar esta foto?"
+  },
+  "moderation": {
+    "title": "Fotos por aprobar",
+    "empty": "No hay fotos pendientes de moderación.",
+    "uploadedBy": "Subida por un invitado",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "approved": "Foto aprobada.",
+    "rejected": "Foto rechazada."
+  },
+  "publicAlbum": {
+    "guestUpload": "Subir mis fotos",
+    "guestUploadTitle": "Comparte tus fotos",
+    "guestUploadHint": "Tus fotos se publicarán cuando el organizador las apruebe.",
+    "guestUploadDone": "¡Gracias! Tus fotos están en revisión.",
+    "notFound": "Álbum no encontrado.",
+    "commentsTitle": "Comentarios",
+    "noComments": "Aún no hay comentarios. Sé el primero."
+  },
+  "comments": {
+    "namePlaceholder": "Tu nombre",
+    "textPlaceholder": "Escribe un comentario...",
+    "submit": "Publicar comentario",
+    "submitted": "Comentario publicado.",
+    "captchaRequired": "Completa la verificación de seguridad.",
+    "captchaFailed": "La verificación de seguridad falló. Inténtalo de nuevo."
+  },
+  "errors": {
+    "generic": "Algo salió mal. Inténtalo de nuevo.",
+    "unauthorized": "Necesitas iniciar sesión.",
+    "invalidCredentials": "Correo o contraseña incorrectos.",
+    "required": "Este campo es obligatorio.",
+    "fileTooLarge": "El archivo es demasiado grande.",
+    "invalidFileType": "Tipo de archivo no admitido.",
+    "guestUploadsDisabled": "Este álbum no acepta fotos de invitados."
+  }
+}

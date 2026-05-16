@@ -77,4 +77,16 @@ Cobros en USD. Multi-idioma (ES/EN).
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL`
-- `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
+
+## Decisiones tomadas durante la construcción
+
+- El código de la app vive en la subcarpeta `evently/` del repositorio
+  (el repo ya contenía apps de ejemplo no relacionadas). Este `CLAUDE.md`
+  permanece en la raíz.
+- Next.js fijado a la versión **15** (`create-next-app@latest` instalaba 16).
+- Tailwind **v4** (config vía CSS, sin `tailwind.config.ts`).
+- La site key de Turnstile se expone como `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+  porque el widget del navegador la necesita.
+- `heic-convert` se añadió como dependencia: `sharp` solo decodifica HEIC si
+  su `libvips` se compiló con `libheif`, lo cual no está garantizado.
