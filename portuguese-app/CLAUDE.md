@@ -57,8 +57,9 @@ progreso persistente, API real, analítica, i18n.
   Wikimedia Commons.
 - **Formato:** `.mp3`, mono, ~24 kHz, loudness normalizada, archivos pequeños.
 - **Nombres:** `public/audio/phonemes/<slug>.mp3` (slug en inglés, p. ej.
-  `vowel-a-oral.mp3`, `vowel-a-nasal.mp3`). SFX en `public/audio/sfx/`
-  (`success.mp3`, `retry.mp3`).
+  `vowel-a-oral.mp3`, `nasal-a.mp3`). SFX en `public/audio/sfx/`
+  (`success.wav`, `retry.wav`); son tonos sintetizados offline por
+  `scripts/generate-audio.mjs`, sin red.
 - Cada audio se declara en un manifiesto tipado (`src/scripts/data/phonemes.ts`);
   la app nunca referencia rutas sueltas.
 
