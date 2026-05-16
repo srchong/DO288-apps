@@ -50,14 +50,17 @@ progreso persistente, API real, analítica, i18n.
 
 ## Banco de audios
 
-- **MVP:** placeholders generados por TTS pt-BR (`edge-tts`, voz neuronal como
-  `pt-BR-FranciscaNeural`) vía `scripts/generate-audio.mjs`. Marcar como
-  placeholder; son intercambiables por grabaciones nativas más adelante.
+- **MVP:** placeholders generados por TTS on-device con el CLI `supertonic`
+  (ONNX, voz `F1`, `--lang pt`) vía `scripts/generate-audio.mjs`. El modelo se
+  descarga una vez desde HuggingFace; después funciona sin red. Son
+  placeholders intercambiables por grabaciones nativas más adelante.
+  Licencia: código MIT, modelo OpenRAIL-M (uso restringido — revisar antes de
+  un lanzamiento comercial).
 - **Sustitución futura:** audio nativo con licencia CC de Lingua Libre o
   Wikimedia Commons.
-- **Formato:** `.mp3`, mono, ~24 kHz, loudness normalizada, archivos pequeños.
-- **Nombres:** `public/audio/phonemes/<slug>.mp3` (slug en inglés, p. ej.
-  `vowel-a-oral.mp3`, `nasal-a.mp3`). SFX en `public/audio/sfx/`
+- **Formato:** `.wav` PCM 16-bit mono 44,1 kHz, clips cortos (~1,3 s).
+- **Nombres:** `public/audio/phonemes/<slug>.wav` (slug en inglés, p. ej.
+  `vowel-a-oral.wav`, `nasal-a.wav`). SFX en `public/audio/sfx/`
   (`success.wav`, `retry.wav`); son tonos sintetizados offline por
   `scripts/generate-audio.mjs`, sin red.
 - Cada audio se declara en un manifiesto tipado (`src/scripts/data/phonemes.ts`);

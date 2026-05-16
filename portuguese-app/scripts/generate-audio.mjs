@@ -1,13 +1,14 @@
 // Genera los audios placeholder de la app:
-//   - Fonemas: voz TTS pt-BR (CLI edge-tts) -> public/audio/phonemes/*.mp3
-//   - SFX:     tonos sintetizados en Node puro -> public/audio/sfx/*.wav
+//   - Fonemas: voz TTS on-device (CLI supertonic) -> public/audio/phonemes/*.wav
+//   - SFX:     tonos sintetizados en Node puro     -> public/audio/sfx/*.wav
 //
-// Los audios de fonemas son PLACEHDERS: una voz TTS pronuncia una palabra
+// Los audios de fonemas son PLACEHOLDERS: una voz TTS pronuncia una palabra
 // de ejemplo. Se sustituirán por grabaciones de hablantes nativos sin tocar
 // la app, ya que las rutas viven en el manifiesto src/scripts/data/phonemes.ts.
 //
-// Requisito para los fonemas: el CLI `edge-tts` (pip install edge-tts) y
-// acceso de red. Los SFX se generan siempre, sin red.
+// Requisito para los fonemas: el CLI `supertonic` (pip install supertonic).
+// La primera ejecución descarga el modelo desde HuggingFace una sola vez;
+// después funciona sin red. Los SFX se generan siempre, sin red.
 //
 // Uso:  npm run generate-audio              (omite archivos ya existentes)
 //       npm run generate-audio -- --force   (regenera todo)
@@ -24,15 +25,19 @@ const execFileAsync = promisify(execFile);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PHONEME_DIR = join(ROOT, 'public', 'audio', 'phonemes');
 const SFX_DIR = join(ROOT, 'public', 'audio', 'sfx');
-const VOICE = 'pt-BR-FranciscaNeural';
+const VOICE = 'F1';
+const LANG = 'pt';
 const FORCE = process.argv.includes('--force');
 const SAMPLE_RATE = 44100;
+// Margen amplio: la primera ejecución de supertonic descarga el modelo y
+// emite barras de progreso por stderr.
+const EXEC_OPTS = { maxBuffer: 16 * 1024 * 1024 };
 
 // --- Generación de fonemas con TTS ----------------------------------------
 
-async function edgeTtsAvailable() {
+async function supertonicAvailable() {
   try {
-    await execFileAsync('edge-tts', ['--help']);
+    await execFileAsync('supertonic', ['version'], EXEC_OPTS);
     return true;
   } catch {
     return false;
@@ -41,9 +46,9 @@ async function edgeTtsAvailable() {
 
 async function generatePhonemes() {
   mkdirSync(PHONEME_DIR, { recursive: true });
-  if (!(await edgeTtsAvailable())) {
-    console.warn('!  CLI `edge-tts` no encontrado: se omiten los audios de fonemas.');
-    console.warn('   Instálalo con `pip install edge-tts` y vuelve a ejecutar este script.');
+  if (!(await supertonicAvailable())) {
+    console.warn('!  CLI `supertonic` no encontrado: se omiten los audios de fonemas.');
+    console.warn('   Instálalo con `pip install supertonic` y vuelve a ejecutar este script.');
     return;
   }
   for (const phoneme of PHONEMES) {
@@ -52,15 +57,15 @@ async function generatePhonemes() {
       console.log(`·  ${phoneme.audioFile} (ya existe)`);
       continue;
     }
-    // Escritura atómica: edge-tts crea el archivo aunque la petición falle,
-    // así que se genera en un .tmp y solo se promueve si todo va bien.
-    const tmp = `${out}.tmp`;
+    // Escritura atómica: se genera en un .tmp.wav y solo se promueve al
+    // nombre final si la síntesis termina sin error.
+    const tmp = out.replace(/\.wav$/, '.tmp.wav');
     try {
-      await execFileAsync('edge-tts', [
-        '--voice', VOICE,
-        '--text', phoneme.ttsText,
-        '--write-media', tmp,
-      ]);
+      await execFileAsync(
+        'supertonic',
+        ['tts', phoneme.ttsText, '-o', tmp, '--lang', LANG, '--voice', VOICE],
+        EXEC_OPTS,
+      );
       renameSync(tmp, out);
       console.log(`OK ${phoneme.audioFile}  «${phoneme.ttsText}»`);
     } catch (err) {
