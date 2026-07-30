@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReceipeInCode · Generador de recetas en tabla acumulativa</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <h1>ReceipeInCode</h1>
+  <p class="app-subtitle">Generador de recetas en <strong>Tabular Recipe Notation</strong> (formato inventado por Michael Chu, cookingforengineers.com)</p>
+</header>
+
+<main class="app-layout">
+
+  <!-- ==================== PANEL IZQUIERDO: FORMULARIO ==================== -->
+  <section class="panel form-panel">
+
+    <fieldset class="block">
+      <legend>1. Datos generales</legend>
+      <div class="grid-2">
+        <label>Título de la receta
+          <input type="text" id="meta-title" placeholder="Ej. Brownie de café">
+        </label>
+        <label>Porciones / rendimiento
+          <input type="text" id="meta-servings" placeholder="Ej. 9 porciones">
+        </label>
+        <label>Tamaño de molde
+          <input type="text" id="meta-pan-size" placeholder="Ej. Molde de 20×20 cm">
+        </label>
+        <label>Temperatura del horno
+          <input type="text" id="meta-oven-temp" placeholder="Ej. 180°C (350°F)">
+        </label>
+        <label>Tiempo de horneado
+          <input type="text" id="meta-bake-time" placeholder="Ej. 30–40 min">
+        </label>
+        <label>Preparación del molde
+          <input type="text" id="meta-pan-prep" placeholder="Ej. Engrasar y enharinar el molde">
+        </label>
+      </div>
+      <label>Notas
+        <textarea id="meta-notes" rows="2" placeholder="Sustituciones, observaciones, etc."></textarea>
+      </label>
+      <div class="allergens-field">
+        <span class="field-label">Alérgenos</span>
+        <div class="checkbox-row" id="allergen-list">
+          <!-- generado por JS -->
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend>2. Ingredientes</legend>
+      <div class="grid-ingredient-form">
+        <label>Cantidad
+          <input type="number" step="any" id="ing-qty" placeholder="1">
+        </label>
+        <label>Unidad
+          <select id="ing-unit"></select>
+        </label>
+        <label class="span-2">Nombre del ingrediente
+          <input type="text" id="ing-name" placeholder="Ej. mantequilla sin sal">
+        </label>
+      </div>
+      <label class="checkbox-inline">
+        <input type="checkbox" id="ing-alt-toggle">
+        Mostrar unidad alterna (ej. imperial + métrico)
+      </label>
+      <div class="grid-ingredient-form" id="ing-alt-wrap" hidden>
+        <label>Cantidad alterna
+          <input type="number" step="any" id="ing-qty-alt" placeholder="115">
+        </label>
+        <label>Unidad alterna
+          <select id="ing-unit-alt"></select>
+        </label>
+      </div>
+      <button type="button" id="btn-add-ingredient" class="btn btn-primary">+ Agregar ingrediente</button>
+
+      <div class="ingredient-list" id="ingredient-list">
+        <p class="placeholder">Aún no hay ingredientes.</p>
+      </div>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend>3. Combinar en acciones (pasos)</legend>
+      <p class="hint">Selecciona uno o más elementos disponibles (ingredientes o mezclas ya creadas) y aplica una acción para combinarlos en un nuevo paso. Repite hasta que quede un único elemento: ese será el paso final.</p>
+
+      <div class="pool-list" id="combine-pool">
+        <p class="placeholder">Agrega ingredientes para poder combinarlos.</p>
+      </div>
+
+      <div class="grid-combine-form">
+        <label class="span-2">Acción
+          <select id="action-select"></select>
+        </label>
+        <label class="span-2" id="custom-action-wrap" hidden>
+          Acción personalizada
+          <input type="text" id="custom-action-input" placeholder="Ej. templar">
+        </label>
+        <label class="span-2">Nota (tiempo / temperatura, opcional)
+          <input type="text" id="note-input" placeholder="Ej. 180°C, 30–40 min">
+        </label>
+      </div>
+      <button type="button" id="btn-combine" class="btn btn-primary">Combinar seleccionados</button>
+
+      <div class="steps-list" id="steps-list"></div>
+    </fieldset>
+
+    <div class="toolbar-bottom">
+      <button type="button" id="btn-example" class="btn btn-secondary">Cargar ejemplo (Brownie)</button>
+      <button type="button" id="btn-reset" class="btn btn-danger">Reiniciar todo</button>
+    </div>
+  </section>
+
+  <!-- ==================== PANEL DERECHO: VISTA PREVIA ==================== -->
+  <section class="panel preview-panel">
+    <div class="preview-toolbar">
+      <h2>Vista previa</h2>
+      <div class="export-buttons">
+        <button type="button" id="btn-print" class="btn btn-primary">🖨 Imprimir / Guardar PDF</button>
+        <button type="button" id="btn-download" class="btn btn-secondary" title="Requiere conexión a internet para cargar las librerías">⬇ Descargar imagen (PNG)</button>
+      </div>
+    </div>
+
+    <div id="errors" class="errors"></div>
+
+    <div id="print-area">
+      <div class="recipe-card" id="preview-card">
+        <p class="placeholder">Agrega ingredientes y combínalos para ver la vista previa.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  <p>Formato original: <em>Tabular Recipe Notation</em> de Michael Chu (cookingforengineers.com, junio 2004). Esta herramienta reproduce el sistema funcional, no el estilo gráfico propietario de CFE.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>
